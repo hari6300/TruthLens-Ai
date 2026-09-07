@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Fast responsive color transitions when toggling dark mode */
+body {
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+@layer utilities {
+  /* Fast responsive hover and tap feedback */
+  .hover-popup {
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s ease-out;
+    will-change: transform;
+  }
+  .hover-popup:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.12), 0 4px 12px -4px rgba(37, 99, 235, 0.1);
+  }
+  .hover-popup:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .hover-popup-sm {
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    will-change: transform;
+  }
+  .hover-popup-sm:hover {
+    transform: translateY(-1px) scale(1.01);
+  }
+  .hover-popup-sm:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* OCR Laser Scan Line Animation */
+  @keyframes ocrScan {
+    0% { top: 0%; opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { top: 96%; opacity: 0.8; }
+  }
+
+  .animate-ocr-scan {
+    animation: ocrScan 2.4s ease-in-out infinite alternate;
+  }
+
+  /* Animated Checkmark stroke-dashoffset */
+  @keyframes drawCheck {
+    0% { stroke-dashoffset: 50; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .animate-draw-check {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: drawCheck 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+
+  /* Aurora Waves Animation */
+  @keyframes auroraMove1 {
+    0% { transform: translate(0%, 0%) rotate(0deg) scale(1); }
+    33% { transform: translate(15%, 12%) rotate(12deg) scale(1.15); }
+    66% { transform: translate(-10%, 20%) rotate(-8deg) scale(0.9); }
+    100% { transform: translate(0%, 0%) rotate(0deg) scale(1); }
+  }
+
+  @keyframes auroraMove2 {
+    0% { transform: translate(0%, 0%) rotate(0deg) scale(1.1); }
+    50% { transform: translate(-18%, -15%) rotate(-15deg) scale(1.25); }
+    100% { transform: translate(0%, 0%) rotate(0deg) scale(1.1); }
+  }
+
+  @keyframes auroraMove3 {
+    0% { transform: translate(0%, 0%) rotate(0deg) scale(1); }
+    50% { transform: translate(20%, -10%) rotate(18deg) scale(1.2); }
+    100% { transform: translate(0%, 0%) rotate(0deg) scale(1); }
+  }
+
+  .animate-aurora-1 {
+    animation: auroraMove1 18s ease-in-out infinite;
+  }
+
+  .animate-aurora-2 {
+    animation: auroraMove2 24s ease-in-out infinite;
+  }
+
+  .animate-aurora-3 {
+    animation: auroraMove3 21s ease-in-out infinite;
+  }
+
+  /* Orb Breathing & Thinking Animations */
+  @keyframes orbBreathe {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(99, 102, 241, 0.3);
+    }
+    50% {
+      transform: scale(1.08);
+      box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 0 60px rgba(168, 85, 247, 0.5);
+    }
+  }
+
+  @keyframes orbThink {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.8), 0 0 50px rgba(59, 130, 246, 0.9);
+    }
+    50% {
+      transform: scale(1.18) rotate(180deg);
+      box-shadow: 0 0 45px rgba(168, 85, 247, 1), 0 0 80px rgba(6, 182, 212, 0.9);
+    }
+  }
+
+  .animate-orb-breathe {
+    animation: orbBreathe 3.2s ease-in-out infinite;
+  }
+
+  .animate-orb-think {
+    animation: orbThink 1.2s ease-in-out infinite;
+  }
+
+  /* Equalizer Voice Wave Bars */
+  @keyframes voiceBar {
+    0%, 100% { height: 6px; }
+    50% { height: 22px; }
+  }
+
+  .animate-voice-bar-1 { animation: voiceBar 0.6s ease-in-out infinite; }
+  .animate-voice-bar-2 { animation: voiceBar 0.8s ease-in-out infinite 0.15s; }
+  .animate-voice-bar-3 { animation: voiceBar 0.5s ease-in-out infinite 0.3s; }
+  .animate-voice-bar-4 { animation: voiceBar 0.7s ease-in-out infinite 0.45s; }
+
+  /* Ripple expansion animation */
+  @keyframes rippleExpand {
+    0% { transform: scale(0.4); opacity: 0.9; }
+    100% { transform: scale(2.8); opacity: 0; }
+  }
+
+  .animate-ripple {
+    animation: rippleExpand 0.7s cubic-bezier(0, 0.2, 0.8, 1) forwards;
+  }
+}
+

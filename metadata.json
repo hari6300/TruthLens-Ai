@@ -1,0 +1,6 @@
+{
+  "name": "TruthLens AI",
+  "description": "AI-powered credibility verification suite for social media links, deepfake video/voice/image analysis, real-time reporting dashboard, and community content flagging.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

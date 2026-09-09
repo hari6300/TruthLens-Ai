@@ -45,7 +45,7 @@ export const DeepfakeAnalyzer: React.FC<DeepfakeAnalyzerProps> = ({ onOpenFlagMo
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DeepfakeAnalysisResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-
+  
   const processFile = (file: File) => {
     setSelectedFile(file);
     setFileName(file.name);

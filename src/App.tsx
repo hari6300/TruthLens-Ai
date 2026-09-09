@@ -15,6 +15,7 @@ import { ThemeProvider } from './components/ThemeContext';
 import { ShieldAlert, Activity } from 'lucide-react';
 
 export default function App() {
+  console.log('APP RENDER:', new Date().toISOString());
   const [activeTab, setActiveTab] = useState<'dashboard' | 'link' | 'category' | 'deepfake' | 'flagged' | 'guide'>('dashboard');
   const [flagModalOpen, setFlagModalOpen] = useState(false);
   const [flagModalData, setFlagModalData] = useState<{ title?: string; url?: string; category?: string } | null>(null);

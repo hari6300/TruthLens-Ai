@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -872,7 +873,12 @@ CRITICAL FOR audioScript: Describe the picture/media directly and factually acco
 
     // Save to store
     const store = loadStore();
-    store.deepfakeReports.unshift(result);
+
+if (!store.deepfakeReports) {
+  store.deepfakeReports = [];
+}
+
+store.deepfakeReports.unshift(result);
 
     // Save recent search with trust score (Authenticity trust score = 100 - deepfakeProbability)
     const trustScore = Math.max(0, 100 - result.deepfakeProbability);

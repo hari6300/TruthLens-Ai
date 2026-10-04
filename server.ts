@@ -35,7 +35,7 @@ async function callSwinModel(
     formData.append('file', blob, 'uploaded-image');
 
     const response = await fetch(
-      'http://127.0.0.1:8000/predict',
+      `${process.env.ML_API_URL || 'http://127.0.0.1:8000'}/predict`,   
       {
         method: 'POST',
         body: formData
@@ -61,7 +61,7 @@ async function callSwinModel(
 }
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Body parser with 50mb limit for media base64 uploads
 app.use(express.json({ limit: '50mb' }));

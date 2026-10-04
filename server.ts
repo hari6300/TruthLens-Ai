@@ -13,6 +13,53 @@ import {
   DeepfakeVerdict
 } from './src/types';
 
+
+async function callSwinModel(
+  base64Data: string,
+  mimeType: string
+): Promise<{
+  prediction: 'FAKE' | 'REAL';
+  fake_probability: number;
+  real_probability: number;
+} | null> {
+  try {
+    const cleanBase64 = base64Data.replace(/^data:[^;]+;base64,/, '');
+    const binaryData = Buffer.from(cleanBase64, 'base64');
+
+    const formData = new FormData();
+
+    const blob = new Blob([binaryData], {
+      type: mimeType || 'image/jpeg'
+    });
+
+    formData.append('file', blob, 'uploaded-image');
+
+    const response = await fetch(
+      'http://127.0.0.1:8000/predict',
+      {
+        method: 'POST',
+        body: formData
+      }
+    );
+
+    if (!response.ok) {
+      console.error(
+        'Swin API returned:',
+        response.status,
+        await response.text()
+      );
+      return null;
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Swin ML API error:', error);
+    return null;
+  }
+}
+
 const app = express();
 const PORT = 3000;
 
@@ -42,6 +89,7 @@ async function callGeminiContent(
   params: {
     contents: any;
     systemInstruction?: string;
+    
     responseMimeType?: string;
     temperature?: number;
   }
@@ -686,6 +734,26 @@ app.post('/api/analyze/media', async (req: Request, res: Response) => {
 
     const ai = getGeminiClient();
 
+    // Run the trained Swin ML model for image uploads.
+    let swinResult: {
+      prediction: 'FAKE' | 'REAL';
+      fake_probability: number;
+      real_probability: number;
+    } | null = null;
+
+    if (
+      mediaType === 'image' &&
+      base64Data &&
+      typeof base64Data === 'string'
+    ) {
+      swinResult = await callSwinModel(
+        base64Data,
+        mimeType || 'image/jpeg'
+      );
+
+      console.log('Swin ML result:', swinResult);
+    }
+
     const systemInstruction = `You are a world-class AI Media Forensic Investigator specializing in Deepfake, Voice Clone, and AI Generative Synthetic Media Detection.
 Analyze the input ${mediaType} file/data or parameters for digital manipulation, generative AI artifacts, facial/voice synthesis, temporal frame glitches, and spectral anomalies.
 
@@ -732,8 +800,19 @@ Return pure JSON matching this exact structure:
   }
 }`;
 
+    const swinEvidence = swinResult
+      ? `
+
+Swin Transformer ML Evidence:
+Prediction: ${swinResult.prediction}
+Fake probability: ${swinResult.fake_probability}%
+Real probability: ${swinResult.real_probability}%
+
+IMPORTANT: For image media, treat the Swin Transformer result above as the primary machine-learning classification. Do not replace its probability with a guessed probability. Use it when forming the final deepfakeProbability and verdict.`
+      : '';
+
     const promptText = `Forensic Analysis Task:
-Media Type: ${mediaType}
+Media Type: ${mediaType}${swinEvidence}
 File Name: ${fileName || 'uploaded_sample'}
 Context / Source URL: ${contextUrl || 'User Upload'}
 Alleged Claims: "${claims || 'None provided'}"
@@ -852,9 +931,17 @@ CRITICAL FOR audioScript: Describe the picture/media directly and factually acco
       title: parsed.title || `Deepfake Forensic Report (${mediaType})`,
       fileName: fileName || undefined,
       previewUrl: base64Data && base64Data.startsWith('data:image') ? base64Data : undefined,
-      deepfakeProbability: typeof parsed.deepfakeProbability === 'number' ? parsed.deepfakeProbability : 50,
-      verdict: parsed.verdict || 'SUSPECTED_EDIT',
-      confidence: parsed.confidence || 85,
+      deepfakeProbability: mediaType === 'image' && swinResult
+        ? swinResult.fake_probability
+        : (typeof parsed.deepfakeProbability === 'number' ? parsed.deepfakeProbability : 50),
+      verdict: mediaType === 'image' && swinResult
+        ? (swinResult.prediction === 'FAKE'
+            ? (swinResult.fake_probability >= 80 ? 'HIGH_RISK_DEEPFAKE' : 'SYNTHETIC_AI')
+            : 'AUTHENTIC')
+        : (parsed.verdict || 'SUSPECTED_EDIT'),
+      confidence: mediaType === 'image' && swinResult
+        ? Math.max(swinResult.fake_probability, swinResult.real_probability)
+        : (parsed.confidence || 85),
       primaryModelDetected: parsed.primaryModelDetected || 'Generative AI Framework',
       artifacts: parsed.artifacts || [],
       technicalMetrics: parsed.technicalMetrics || {},

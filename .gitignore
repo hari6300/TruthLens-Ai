@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Python / ML
+ml/.venv/
+ml/__pycache__/
+ml/genimage_test/
+ml/dataset_v2/
+genimage_files.csv
+ml/dataset/
